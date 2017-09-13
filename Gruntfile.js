@@ -6,8 +6,17 @@ module.exports = function (grunt) {
 		eslint: {
 			target: [
 				'*.js',
-				'src/*.js'
+				'src/*.js',
+				'test/*.js'
 			]
+		},
+		mochaTest: {
+			options: {
+				reporter: 'spec'
+			},
+			test: {
+				src: ['test/*_spec.js']
+			}
 		},
 		nsp: {
 			package: grunt.file.readJSON('package.json')
@@ -16,9 +25,10 @@ module.exports = function (grunt) {
 
 	// Tasks
 	grunt.loadNpmTasks('grunt-eslint');
+	grunt.loadNpmTasks('grunt-mocha-test');
 	grunt.loadNpmTasks('grunt-nsp');
 
 	// Aliases
-	grunt.registerTask('test', ['eslint', 'nsp']);
+	grunt.registerTask('test', ['eslint', 'mochaTest', 'nsp']);
 	grunt.registerTask('default', ['test']);
 };

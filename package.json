@@ -29,7 +29,8 @@
     "grunt-eslint": "^20.1.0",
     "grunt-mocha-test": "^0.13.2",
     "grunt-nsp": "^2.3.1",
-    "mocha": "^3.5.3"
+    "mocha": "^3.5.3",
+    "q": "^1.5.0"
   },
   "keywords": [
     "tesera"

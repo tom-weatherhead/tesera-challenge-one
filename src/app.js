@@ -17,26 +17,26 @@
 
 'use strict';
 
-const path = require('path');
+// const path = require('path');
 
 const engine = require('..');
 
-console.log('process.argv:', process.argv);
+// console.log('process.argv:', process.argv);
 
 if (process.argv.length <= 2) {
-	console.log('Usage:', __filename, 'SOME_PARAM');
+	console.error('Usage:', __filename, 'SOME_PARAM');
 	process.exit(-1);
 }
 
-const cmd = process.argv[1];
-const cmdFile = path.basename(cmd);
+// const cmd = process.argv[1];
+// const cmdFile = path.basename(cmd);
 const operation = process.argv[2];
 const operationArgs = process.argv.slice(3);
 
-console.log('cmd:', cmd);
-console.log('cmdFile:', cmdFile);
-console.log('operation:', operation);
-console.log('operationArgs:', operationArgs);
+// console.log('cmd:', cmd);
+// console.log('cmdFile:', cmdFile);
+// console.log('operation:', operation);
+// console.log('operationArgs:', operationArgs);
 
 try {
 	engine(operation, operationArgs);
