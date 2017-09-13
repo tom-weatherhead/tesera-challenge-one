@@ -2,7 +2,7 @@
   "name": "tesera-challenge-one",
   "version": "1.0.0",
   "description": "tesera-challenge-one",
-  "main": "src/app.js",
+  "main": "src/engine.js",
   "homepage": "https://github.com/tom-weatherhead/tesera-challenge-one#readme",
   "repository": {
     "type": "git",
