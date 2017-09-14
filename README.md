@@ -1,18 +1,36 @@
 # tesera-challenge-one
 tesera-challenge-one
 
-# challenge-one
 Simple Node developer challenge.
-
-### Goal
-Clone this repo and build a simple key/value store CLI using only the core Node API. Once you have finished the challenge zip and email your solution to the email provided.
 
 ### Store API
 
-`$ store add mykey myvalue`
+$ store add mykey myvalue
 
-`$ store list`
+$ store list
 
-`$ store get mykey`
+$ store get mykey
 
-`$ store remove mykey`
+$ store remove mykey
+
+Git installation instructions: Minimal:
+
+	$ git clone https://github.com/tom-weatherhead/tesera-challenge-one.git
+	$ cd tesera-challenge-one
+	$ npm link
+
+Additional instructions for running security, lint, and unit tests:
+
+	$ npm install -g grunt
+	$ npm install
+	$ grunt
+
+Example usage:
+
+	$ store add a 2
+	$ store add b 3
+	$ store add c 5
+	$ store list
+	$ store get b
+	$ store remove b
+	$ store list

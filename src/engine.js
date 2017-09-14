@@ -93,7 +93,7 @@ const operations = {
 
 		let [key] = operationArgs;
 
-		console.log('The stored value for key', key, 'is', storeData[key]);
+		console.log('Key', key, 'is associated with value', storeData[key]);
 
 		if (promise) {
 			promise.resolve(storeData[key] || null);
