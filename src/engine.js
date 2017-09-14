@@ -8,7 +8,7 @@ const path = require('path');
 const dataFilePath = './data/store.json';
 const dataFileDir = path.dirname(dataFilePath);
 
-function throwError(errorCode, error, message, promise) {
+function throwError (errorCode, error, message, promise) {
 	console.error(message);
 
 	if (!error) {
@@ -16,7 +16,7 @@ function throwError(errorCode, error, message, promise) {
 	}
 
 	error.errorCode = errorCode;
-			
+
 	if (promise) {
 		promise.reject(error);
 	} else {
@@ -24,20 +24,19 @@ function throwError(errorCode, error, message, promise) {
 	}
 }
 
-function guaranteeExistenceOfDataDir() {
-	// console.log('fs.existsSync(dataFileDir) : ', fs.existsSync(dataFileDir));
+function guaranteeExistenceOfDataDir () {
 
 	if (!fs.existsSync(dataFileDir)) {
 		fs.mkdirSync(dataFileDir);
 	}
 }
 
-function readStore(callback, promise) {
+function readStore (callback, promise) {
 	if (!fs.existsSync(dataFilePath)) {
 		callback({});
 	} else {
 		fs.readFile(dataFilePath, 'utf8', (errorReadFile, data) => {
-			
+
 			if (errorReadFile) {
 				throwError('readStoreError', errorReadFile, null, promise);
 			} else {
@@ -47,8 +46,9 @@ function readStore(callback, promise) {
 	}
 }
 
-function writeStore(data, promise, resultOfResolve) {
+function writeStore (data, promise, resultOfResolve) {
 	guaranteeExistenceOfDataDir();
+
 	fs.writeFile(dataFilePath, JSON.stringify(data), 'utf8', function (errorWriteFile) {
 
 		if (errorWriteFile) {
@@ -56,7 +56,7 @@ function writeStore(data, promise, resultOfResolve) {
 		} else if (promise) {
 			promise.resolve(resultOfResolve || data);
 		}
-	}); 
+	});
 }
 
 const operations = {
@@ -69,87 +69,78 @@ const operations = {
 		let [key, value] = operationArgs;
 
 		storeData[key] = value;
-		writeStore(storeData, promise, storeData);
+		writeStore(storeData, promise);
 	},
 	list: (operationArgs, storeData, promise) => {
-		// console.log('fooList: operationArgs is:', operationArgs);
 
 		if (operationArgs.length !== 0) {
-			// console.log('fooAdd: Expected zero parameters to \'store list\', not', operationArgs.length);
-			// return null;
 			throwError('badNumArgs', null, 'store list: Expected 0 parameters, not ' + operationArgs.length + ' parameter(s).', promise);
 		}
-		
+
 		for (var key in storeData) {
-			console.log('key:', key,'; value:', storeData[key]);
+			console.log('Key', key, 'is associated with value', storeData[key]);
 		}
 
 		if (promise) {
-			promise.resolve(null);
+			promise.resolve(storeData);
 		}
 	},
 	get: (operationArgs, storeData, promise) => {
-		// console.log('fooGet: operationArgs is:', operationArgs);
 
 		if (operationArgs.length !== 1) {
-			// console.log('fooAdd: Expected one parameter to \'store get\', not', operationArgs.length);
-			// return null;
 			throwError('badNumArgs', null, 'store get: Expected 1 parameter, not ' + operationArgs.length + ' parameter(s).', promise);
 		}
 
 		let [key] = operationArgs;
 
-		console.log('key:', key);
-		console.log('The stored value for the key is:', storeData[key]);
-		
+		console.log('The stored value for key', key, 'is', storeData[key]);
+
 		if (promise) {
-			promise.resolve(storeData[key]);
+			promise.resolve(storeData[key] || null);
 		}
 	},
 	remove: (operationArgs, storeData, promise) => {
-		// console.log('fooRemove: operationArgs is:', operationArgs);
 
 		if (operationArgs.length !== 1) {
-			// console.log('fooAdd: Expected one parameter to \'store remove\', not', operationArgs.length);
-			// return null;
 			throwError('badNumArgs', null, 'store remove: Expected 1 parameter, not ' + operationArgs.length + ' parameter(s).', promise);
 		}
 
 		let [key] = operationArgs;
 
-		// console.log('key:', key);
 		delete storeData[key];
-		writeStore(storeData, promise, storeData);
+		writeStore(storeData, promise);
 	}
 };
 
 
 const keys = Object.keys(operations).filter(x => operations.hasOwnProperty(x));
 
-function executeStoreCommand(operation, operationArgs, promise) {
-	// console.log('executeStoreCommand:', operation, operationArgs);
+function executeStoreCommand (operation, operationArgs, promiseFactory) {
+	let promise;
+
+	if (promiseFactory) {
+		promise = promiseFactory();
+	}
 
 	if (keys.includes(operation)) {
 		readStore(storeData => {
-			// console.log('readStore: storeData:', storeData);
-			// console.log('Executing the lambda for', operation, '...');
 			operations[operation](operationArgs, storeData, promise);
 		}, promise);
 	} else {
 		const message = 'Unrecognized operation: \'' + operation + '\'.';
 		console.error(message);
-			
+
 		if (promise) {
 			promise.reject(message);
 		} else {
 			throwError('unrecognizedOp', null, message, promise);
 		}
 	}
-	
+
 	if (promise) {
 		return promise.promise;
 	}
-	
+
 	return null;
 }
 

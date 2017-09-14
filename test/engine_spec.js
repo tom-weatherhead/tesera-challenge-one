@@ -2,42 +2,115 @@
 
 'use strict';
 
-const Q = require('q');	// Promises for JavaScript. See https://www.npmjs.com/package/q and https://github.com/kriskowal/q
+const fs = require('fs');
+
+// npm package q : Promises for JavaScript.
+// See https://www.npmjs.com/package/q and https://github.com/kriskowal/q
+const Q = require('q');
 
 const chai = require('chai');
 const expect = chai.expect;
 
 const engine = require('..');
 
-describe('App', function () {
-	describe('store get a', function () {
-		it('Rocks!', function (done) {
-			let deferred = Q.defer();
+function promiseFactory () {
+	return Q.defer();
+}
 
-			// try {
-				// Arrange
+describe('App', function () {
+	beforeEach(function (done) {								// eslint-disable-line no-undef
+		const dataFilePath = './data/store.json';
+
+		if (fs.existsSync(dataFilePath)) {
+			fs.unlinkSync(dataFilePath);
+		}
+
+		done();
+	});
+
+	describe('store add a and b', function () {
+		it('Rocks!', function (done) {
+			// Arrange
+			// Act
+			engine('add', ['a', '7'], promiseFactory)
+				.then(result => {
+					expect(result).to.be.deep.equal(
+						{ a: '7' }
+					);
+
+					return engine('add', ['b', '21'], promiseFactory);
+				})
+				.then(result => {
+					// Assert
+					expect(result).to.be.deep.equal(
+						{ a: '7', b: '21' }
+					);
+					done();
+				});
+		});
+	});
+
+	describe('store list', function () {
+		it('Rocks!', function (done) {
+			// Arrange
+			engine('add', ['a', '7'], promiseFactory)
+				.then(() => { return engine('add', ['b', '13'], promiseFactory); })
+				.then(() => { return engine('add', ['c', '91'], promiseFactory); })
 				// Act
-				engine('get', ['a'], deferred)
-					.then(result => {
-						// Assert
-						console.log('Test: store get a: result is: ', result);
-						expect(result).to.be.not.null;		// eslint-disable-line no-unused-expressions
-						// expect(result).to.equal(7);
-						expect(result).to.equal('7');
-						done();
-					})
-					.fail(error => {
-						console.error('Test: store get a: error:\n\n', error, '\n');
-						expect(null).to.be.not.null;		// eslint-disable-line no-unused-expressions
-						done();
-					})
-					// .done()
-					;
-			// } catch (error) {
-				// expect(testDescriptor.errorHandlingFunction).to.be.not.null;	// eslint-disable-line no-unused-expressions
-				// testDescriptor.errorHandlingFunction(engine, expect, error.message);
-				// done();
-			// }
+				.then(() => { return engine('list', [], promiseFactory); })
+				.then(result => {
+					// Assert
+					expect(result).to.be.deep.equal(
+						{ a: '7', b: '13', c: '91' }
+					);
+					done();
+				});
+		});
+	});
+
+	describe('store get existent', function () {
+		it('Rocks!', function (done) {
+			// Arrange
+			engine('add', ['a', '7'], promiseFactory)
+				// Act
+				.then(() => { return engine('get', ['a'], promiseFactory); })
+				.then(result => {
+					// Assert
+					expect(result).to.equal('7');
+					done();
+				});
+		});
+	});
+
+	describe('store get non-existent', function () {
+		it('Rocks!', function (done) {
+			// Arrange
+			engine('add', ['a', '7'], promiseFactory)
+				// Act
+				.then(() => { return engine('get', ['z'], promiseFactory); })
+				.then(result => {
+					// Assert
+					expect(result).to.be.null;		// eslint-disable-line no-unused-expressions
+					done();
+				});
+		});
+	});
+
+	describe('store remove b', function () {
+		it('Rocks!', function (done) {
+			// Arrange
+			engine('add', ['a', '7'], promiseFactory)
+				.then(() => { return engine('add', ['b', '13'], promiseFactory); })
+				.then(() => { return engine('add', ['c', '91'], promiseFactory); })
+				// Act
+				.then(() => { return engine('remove', ['b'], promiseFactory); })
+				.then(result => {
+					// Assert
+					expect(result).to.be.deep.equal(
+						{ a: '7', c: '91' }
+					);
+					done();
+				});
 		});
 	});
 });
