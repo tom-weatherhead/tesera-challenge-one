@@ -1,4 +1,7 @@
 # tesera-challenge-one
+
+[![build status](https://secure.travis-ci.org/tom-weatherhead/tesera-challenge-one.svg)](http://travis-ci.org/tom-weatherhead/tesera-challenge-one)
+
 tesera-challenge-one
 
 Simple Node developer challenge.
